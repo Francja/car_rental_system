@@ -24,7 +24,8 @@ class Reservation:
         Reservation._id_num += 1
 
     def __str__(self):
-        return f"ID {self.reservation_id}: {self.car_type} from {self.start_date} for {self.number_of_days} days."
+        return f"ID {self.reservation_id}: {self.car_type} from {self.start_date} to {self.end_date} "
+
 
 # CarRentalSystem class to manage cars and reservations
 class CarRentalSystem:
@@ -36,20 +37,21 @@ class CarRentalSystem:
         self.cars.append(Car(car_type, count))
 
     def show_cars(self):
+        print("\nAvailable cars:")
         for car in self.cars:
             print(car)
 
     def reserve_car(self, car_type, start_date, number_of_days):
         start_date = datetime.datetime.strptime(start_date, "%Y-%m-%d %H:%M")
         number_of_days = int(number_of_days)
-        if not self.is_car_available(car_type, start_date,number_of_days):
-            print("No cars available for this dates")
+        if not self.is_car_available(car_type, start_date, number_of_days):
+            print("\nNo cars available for this date")
         else:
             for car in self.cars:
                 if car.car_type == car_type and car.count > 0:
-                    new_reservation = Reservation(car_type,start_date,number_of_days)
+                    new_reservation = Reservation(car_type, start_date, number_of_days)
                     self.reservations.append(new_reservation)
-                    return Reservation
+                    print(f"\nNew reservation: {new_reservation}")
 
     def is_car_available(self, car_type, start_date, number_of_days):
 
@@ -89,14 +91,14 @@ def menu():
 if __name__ == '__main__':
 
     crs = CarRentalSystem()
-    crs.add_cars("Sedan", 2)
-    crs.add_cars("SUV", 1)
+    crs.add_cars("Sedan", 1)
+    crs.add_cars("SUV", 2)
     crs.add_cars("Van", 3)
     crs.show_cars()
-    print("First reserv")
     crs.reserve_car("SUV", "2023-03-01 10:00", 5)
-    print("Second reserv.")
     crs.reserve_car("SUV", "2023-03-06 13:00", 5)
+    crs.reserve_car("SUV", "2023-03-03 12:00", 5)
+    crs.reserve_car("SUV", "2023-03-03 12:00", 5)
 
     while True:
         menu()
