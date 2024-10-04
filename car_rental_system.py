@@ -7,6 +7,9 @@ class Car:
         self.car_type = car_type
         self.count = count
 
+    def __str__(self):
+        return f"{self.car_type} (Count: {self.count})"
+
 
 # Reservation class to store reservation details
 class Reservation:
@@ -19,6 +22,8 @@ class Reservation:
         self.reservation_id = Reservation._id_num
         Reservation._id_num += 1
 
+    def __str__(self):
+        return f"ID {self.reservation_id}: {self.car_type} from {self.start_date} for {self.number_of_days} days."
 
 # CarRentalSystem class to manage cars and reservations
 class CarRentalSystem:
@@ -26,11 +31,25 @@ class CarRentalSystem:
         self.cars = []
         self.reservations = []
 
-    def reserve_car(self):
-        print("\nCar reserved")
+    def add_cars(self, car_type, count):
+        self.cars.append(Car(car_type, count))
+
+    def show_cars(self):
+        for car in self.cars:
+            print(car)
+
+    def reserve_car(self, car_type, start_date, number_of_days):
+        for car in self.cars:
+            if car.car_type == car_type and car.count > 0:
+                new_reservation = Reservation(car_type,start_date,number_of_days)
+                self.reservations.append(new_reservation)
+                car.count -= 1
+                return Reservation
+
 
     def show_reservations(self):
-        print("\nShowing reservations")
+        for reservation in self.reservations:
+            print(reservation)
 
     def remove_reservation(self):
         print("\nRemoved reservation")
@@ -48,12 +67,19 @@ def menu():
 if __name__ == '__main__':
 
     crs = CarRentalSystem()
+    crs.add_cars("Sedan", 2)
+    crs.add_cars("SUV", 1)
+    crs.add_cars("Van", 3)
+    crs.show_cars()
 
     while True:
         menu()
         choice = input("\nPlease choose an option: ")
         if choice == '1':
-            crs.reserve_car()
+            car_type = input("Enter car type: ")
+            start_date = input("Enter start date (YYYY-MM-DD HH:MM): ")
+            number_of_days = int(input("Enter number of days: "))
+            crs.reserve_car(car_type, start_date, number_of_days)
         elif choice == '2':
             crs.show_reservations()
         elif choice == '3':
