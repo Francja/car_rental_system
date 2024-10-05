@@ -1,5 +1,7 @@
 import datetime
 
+CAR_TYPES = ["Sedan", "SUV", "Van"]
+
 
 # Car class with the car type and number of cars available:
 class Car:
@@ -32,8 +34,23 @@ class CarRentalSystem:
     def __init__(self):
         self.cars = []
         self.reservations = []
+        Reservation._id_num = 1
 
     def add_cars(self, car_type, count):
+        # Check if count is positive integer
+        if not isinstance(count, int) or count < 1:
+            print("\nCount must be a positive integer")
+            return None
+        # Check if the car type in scope
+        if car_type not in CAR_TYPES:
+            print("\nInvalid car type")
+            return None
+        # Check if the car type already exists
+        for car in self.cars:
+            if car.car_type == car_type:
+                car.count += count
+                return None
+
         self.cars.append(Car(car_type, count))
 
     def show_cars(self):
@@ -42,10 +59,31 @@ class CarRentalSystem:
             print(car)
 
     def reserve_car(self, car_type, start_date, number_of_days):
-        start_date = datetime.datetime.strptime(start_date, "%Y-%m-%d %H:%M")
-        number_of_days = int(number_of_days)
+        # Validate car type
+        if car_type not in CAR_TYPES:
+            print("Invalid car type")
+            return None
+
+        # Validate if date entered correctly
+        try:
+            start_date = datetime.datetime.strptime(start_date, "%Y-%m-%d %H:%M")
+        except:
+            print("Start date must be in the format YYYY-MM-DD HH:MM.")
+            return None
+
+        # Validate the number of days is an positive integer
+        try:
+            number_of_days = int(number_of_days)
+            if number_of_days <= 0:
+                print("Number of days must be a positive integer.")
+                return None
+        except:
+            print("Number of days must be an integer")
+            return None
+
+        # Checks if car is available
         if not self.is_car_available(car_type, start_date, number_of_days):
-            print("\nNo cars available for this type and date")
+            print("No cars available for this type and date")
         else:
             new_reservation = Reservation(car_type, start_date, number_of_days)
             self.reservations.append(new_reservation)
@@ -92,11 +130,21 @@ class CarRentalSystem:
             print(reservation)
 
     def remove_reservation(self, reservation_id):
-        reservation_id = int(reservation_id)
+        try:
+            reservation_id = int(reservation_id)
+            if reservation_id <= 0:
+                print("Reservation ID must be a positive integer.")
+                return None
+        except:
+            print("Reservation ID must be an integer")
+            return None
+
         for reservation in self.reservations:
             if reservation.reservation_id == reservation_id:
                 self.reservations.remove(reservation)
-        print(f"\nReservation {reservation_id} removed.")
+                print(f"\nReservation {reservation_id} removed.")
+                return None
+        print("No such reservation")
 
 
 def menu():
@@ -110,26 +158,13 @@ def menu():
 
 
 if __name__ == '__main__':
-
-
     crs = CarRentalSystem()
     crs.add_cars("Sedan", 1)
     crs.add_cars("SUV", 2)
     crs.add_cars("Van", 3)
-
-    # basic unit testing for now
-    crs.show_cars()
     crs.reserve_car("SUV", "2023-03-01 13:00", 5)
+    crs.reserve_car("SUV", "2023-03-02 10:00", 5)
     crs.reserve_car("Sedan", "2023-03-01 13:00", 5)
-    crs.reserve_car("Sedan", "2023-03-01 13:00", 5)
-    crs.reserve_car("Ford Focus", "2023-03-01 13:00", 5)
-    crs.reserve_car("SUV", "2023-03-06 13:00", 5)
-    crs.reserve_car("SUV", "2023-03-03 12:00", 5)
-    crs.reserve_car("SUV", "2023-03-03 12:00", 5)
-    crs.show_reservations()
-    crs.remove_reservation(1)
-    crs.reserve_car("SUV", "2023-03-03 12:00", 1)
-    crs.show_reservations()
 
     while True:
         menu()
